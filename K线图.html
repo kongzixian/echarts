@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap/css/bootstrap.css" />
+    <style type="text/css">
+
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="col-md-8">
+            <div class="kLineBox" style="height:600px;position:relative;">
+                <div id="kLine" style="width:100%;height:100%;"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="plugins/requirejs/require.js" data-main="plugins/requirejs/main.js"></script>
+    <script type="text/javascript">
+        require(['main'],function(){
+            require(['jquery','echarts','bootstrap'],function($,echarts){
+
+
+            /*===========================环状图开始==========================*/
+                kLineUrl('json/kLineJson.json')
+                function kLineUrl(url){
+                    $.ajax({
+                        async:true,
+                        url:url,
+                        type:"get",
+                        dataType:'json',
+                        success:function(data){
+                            renderKLine(data,'kLine')
+                            // console.log(data)
+                        }
+                    });
+                };
+                // 生成环状图函数
+                function renderKLine(data,chartsName){
+                    var chart=echarts.init(document.getElementById(chartsName));
+                    var data0 = splitData(data.basicData);
+                    var option = {
+                        title: {
+                            text: '上证指数',
+                            left: 0
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'line'
+                            }
+                        },
+                        legend: {
+                            data: data.legendData
+                        },
+                        grid: {
+                            left: '10%',
+                            right: '10%',
+                            bottom: '15%'
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: data0.categoryData,
+                            scale: true,
+                            boundaryGap : false,
+                            axisLine: {onZero: false},
+                            splitLine: {show: false},
+                            splitNumber: 20,
+                            min: 'dataMin',
+                            max: 'dataMax'
+                        },
+                        yAxis: {
+                            scale: true,
+                            splitArea: {
+                                show: true
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 50,
+                                end: 100
+                            },
+                            {
+                                show: true,
+                                type: 'slider',
+                                y: '90%',
+                                start: 50,
+                                end: 100
+                            }
+                        ],
+                        series: [
+                            {
+                                name: data.legendData[0],
+                                type: 'candlestick',
+                                data: data0.values,
+                                markPoint: {
+                                    label: {
+                                        normal: {
+                                            formatter: function (param) {
+                                                return param != null ? Math.round(param.value) : '';
+                                            }
+                                        }
+                                    },
+                                    data: [
+                                        {
+                                            name: 'XX标点',
+                                            coord: ['2013/5/31', 2300],
+                                            value: 2300,
+                                            itemStyle: {
+                                                normal: {color: 'rgb(41,60,85)'}
+                                            }
+                                        },
+                                        {
+                                            name: 'highest value',
+                                            type: 'max',
+                                            valueDim: 'highest'
+                                        },
+                                        {
+                                            name: 'lowest value',
+                                            type: 'min',
+                                            valueDim: 'lowest'
+                                        },
+                                        {
+                                            name: 'average value on close',
+                                            type: 'average',
+                                            valueDim: 'close'
+                                        }
+                                    ],
+                                    tooltip: {
+                                        formatter: function (param) {
+                                            return param.name + '<br>' + (param.data.coord || '');
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    symbol: ['none', 'none'],
+                                    data: [
+                                        // [
+                                        //     {
+                                        //         name: 'from lowest to highest',
+                                        //         type: 'min',
+                                        //         valueDim: 'lowest',
+                                        //         symbol: 'circle',
+                                        //         symbolSize: 10,
+                                        //         label: {
+                                        //             normal: {show: false},
+                                        //             emphasis: {show: false}
+                                        //         }
+                                        //     },
+                                        //     {
+                                        //         type: 'max',
+                                        //         valueDim: 'highest',
+                                        //         symbol: 'circle',
+                                        //         symbolSize: 10,
+                                        //         label: {
+                                        //             normal: {show: false},
+                                        //             emphasis: {show: false}
+                                        //         }
+                                        //     }
+                                        // ],
+                                        {
+                                            name: 'min line on close',
+                                            type: 'min',
+                                            valueDim: 'close'
+                                        },
+                                        {
+                                            name: 'max line on close',
+                                            type: 'max',
+                                            valueDim: 'close'
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                name: data.legendData[1],
+                                type: 'line',
+                                data: calculateMA(data0,5),
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {opacity: 0.5}
+                                }
+                            },
+                            {
+                                name: data.legendData[2],
+                                type: 'line',
+                                data: calculateMA(data0,10),
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {opacity: 0.5}
+                                }
+                            },
+                            {
+                                name: data.legendData[3],
+                                type: 'line',
+                                data: calculateMA(data0,20),
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {opacity: 0.5}
+                                }
+                            },
+                            {
+                                name: data.legendData[4],
+                                type: 'line',
+                                data: calculateMA(data0,30),
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {opacity: 0.5}
+                                }
+                            },
+
+                        ]
+                    };
+                    chart.setOption(option,true)
+                }
+
+
+                function calculateMA(data,dayCount) {
+                    var result = [];
+                    for (var i = 0, len = data.values.length; i < len; i++) {
+                        if (i < dayCount) {
+                            result.push('-');
+                            continue;
+                        }
+                        var sum = 0;
+                        for (var j = 0; j < dayCount; j++) {
+                            sum += data.values[i - j][1];
+                        }
+                        result.push(sum / dayCount);
+                    }
+                    return result;
+                }
+               
+                function splitData(rawData) {
+                    var categoryData = [];
+                    var values = []
+                    for (var i = 0; i < rawData.length; i++) {
+                        categoryData.push(rawData[i].splice(0, 1)[0]);
+                        values.push(rawData[i])
+                    }
+                    return {
+                        categoryData: categoryData,
+                        values: values
+                    };
+                }
+
+
+
+            /*===========================环状图结束==========================*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            });
+        });
+
+    </script>
+</body>
+    
+</html>

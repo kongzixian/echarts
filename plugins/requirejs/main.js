@@ -1,0 +1,57 @@
+require.config({
+    baseUrl:"plugins/",
+    paths:{
+        jquery:"jQuery/jquery.min",
+        bootstrap:"bootstrap/js/bootstrap",
+        lodash:"lodash/3.10.1/lodash",
+        ensembleFrame:"ensembleFrame/ensembleFrame",
+        velocity:'velocity/velocity.min',
+        treeview:"bootstrap/js/bootstrap-treeview",
+        echarts:"echarts/echarts.min",
+        foshan:"echarts/foshan",
+        treeStatus:"treeStatus/treeStatus",
+        echartsCtooltipCarousel:"echarts/echarts-tooltip-carousel"
+
+       
+    },
+    shim:{
+        jquery:{exports:"jquery"},
+        bootstrap:{
+            deps:["jquery"],
+            exports:"bootstrap"
+        },
+        lodash:{
+            deps:["jquery"],
+            exports:"lodash"
+        },
+        ensembleFrame:{
+            deps:["jquery","lodash"],
+            exports:"ensembleFrame"
+        },
+        velocity:{
+            deps:["jquery"],
+            exports:"velocity"
+        },
+        treeview:{
+            deps:["jquery"],
+            exports:"treeview"
+        },
+        echarts:{
+            deps:["jquery"],
+            exports:"echarts"
+        },
+        foshan:{
+            deps:["jquery"],
+            exports:"foshan"
+        },
+        echartsCtooltipCarousel:{
+            deps:["jquery","echarts"],
+            exports:"echartsCtooltipCarousel"
+        },
+        treeStatus:{
+            deps:["jquery","lodash"],
+            exports:"treeStatus"
+        },
+
+    }
+});

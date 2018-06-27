@@ -1,0 +1,13 @@
+{
+    "legendData":["2D线","3D线","资源类","采集类","宝宝大全","2D视频","3D视频"],
+    "renderDoughnutSeriesData":[
+                                    {"value":435, "name":"2D线"},
+                                    {"value":679, "name":"3D线"},
+                                    {"value":848, "name":"资源类"},
+                                    {"value":348, "name":"采集类"},
+                                    {"value":679, "name":"宝宝大全"},
+                                    {"value":848, "name":"2D视频"},
+                                    {"value":348, "name":"3D视频"}
+                             
+                                ]
+}

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="plugins/bootstrap/css/bootstrap.css" />
+    <style type="text/css">
+
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="col-md-8">
+            <div class="tableBarBox" style="height:500px;position:relative;">
+                <div id="tableBar" style="width:100%;height:100%;"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="plugins/requirejs/require.js" data-main="plugins/requirejs/main.js"></script>
+    <script type="text/javascript">
+        require(['main'],function(){
+            require(['jquery','echarts','bootstrap'],function($,echarts){
+
+
+            /*===========================柱状表格图开始==========================*/
+                tableBarUrl('json/tableBarJson.json')
+
+
+                function tableBarUrl(url){
+                    $.ajax({
+                        async:true,
+                        url:url,
+                        type:"get",
+                        dataType:'json',
+                        success:function(data){
+                            renderTableBar(data,'tableBar');
+                            console.log(data)
+                        }
+                    });
+                };
+                // renderTableBar('','tableBar')
+                function renderTableBar(data,chartsName){
+                    var chart=echarts.init(document.getElementById(chartsName));
+                    // var data = {
+                    //     title: ['总计', '12-01', '12-02', '12-03', '12-04', '12-05', '12-06', '12-07', '12-08', '12-09'],
+                    //     plan_production: [500, 300, 490, 333, 346, 777, 888, 864, 789, 765],
+                    //     actual_production: [300, 400, 500, 300, 400, 500, 300, 400, 500, 500],
+                    //     attainment_rate: [60, 80, 90, 60, 70, 80, 90, 60, 70, 90],
+                    //     productivity: [30, 45, 88, 100, 110, 70, 80, 90, 100, 100]
+                    // };
+                    // for (var prop in data.dataArr) {
+                    //     if(data.hasOwnProperty(prop)){
+                    //         data.dataArr[prop] = data.dataArr[prop].slice(1, -1);
+                    //     }
+                    // }
+                    console.log(data.ll.plan_production)
+
+                    
+                    var lineList = getTableLine(6);
+                    // console.log(data.name)
+
+                    option = {
+                        title: [{
+                            text: chartText(data.allNames),
+                            bottom: 76,
+                            left: 10,
+                            textStyle: {
+                                lineHeight: 20,
+                                fontSize: 13,
+
+                                fontWeight: 'normal',
+                                formatter: function(value) {
+                                    return '{table|' + value + '}';
+                                },
+                                rich: {
+                                    table: {
+                                        align: 'center'
+                                    }
+                                }
+                            }
+                        }],
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                label: {
+                                    backgroundColor: '#283b56'
+                                }
+                            }
+                        },
+                        legend: {
+                            data: data.allNames
+                        },
+                        grid: {
+                            bottom: 166,
+                            left: 140,
+                            right: 80
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                saveAsImage: {},
+                                restore: {},
+                                // brush: {}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            start: 0,
+                            end: 50,
+                            maxSpan: 80,
+                            // zoomLock: true
+                        },
+                        xAxis: [{
+                            type: 'category',
+                            boundaryGap: true,
+                            data: data.title,
+                            axisTick: {
+                                length: 128
+                            },
+                            axisLabel: {
+                                formatter: function(value, index) {
+                                    return '{table|' + value +
+                                        '}\n{table|' + data.plan_production[index] +
+                                        '}\n{table|' + data.plan_production[index] +
+                                        '}\n{table|' + data.actual_production[index] +
+                                        '}\n{table|' + data.attainment_rate[index] +
+                                        '%}\n{table|' + data.productivity[index] + '%}';
+                                },
+                                rich: {
+                                    table: {
+                                        lineHeight: 20,
+                                        align: 'center'
+                                    }
+                                }
+                            }
+                        }],
+                        yAxis: [{
+                            type: 'value',
+                            scale: false,
+                            minInterval: 1,
+                            name: '数量',
+                            splitLine: {
+                                show: false
+                            },
+                            // min: function(v) {
+                            //     return Math.max((v.min - 10), 0);
+                            // }
+                        }],
+                        series: [{
+                            name: '用户原因',
+                            type: 'bar',
+                            label: {
+                                show: false,
+                                position: 'top'
+                            },
+                            itemStyle:{
+                                normal:{color:'#01B0F1'}  
+                            },
+                            barWidth:30,
+                            yAxisIndex: 0,
+                            stack:'品牌',
+                            data: data.ll.title
+                        }, {
+                            name: '主网故障',
+                            type: 'bar',
+                            label: {
+                                show: false,
+                                position: 'top'
+                            },
+                            itemStyle:{
+                                normal:{color:'#7A9FCC'}  
+                            },
+                            yAxisIndex: 0,
+                            stack:'品牌',
+                            data: data.ll.actual_production
+                        }, 
+                       {
+                            name: '外力破坏',
+                            type: 'bar',
+                            label: {
+                                show: false,
+                                position: 'top'
+                            },
+                            itemStyle:{
+                                normal:{color:'#AC74D5'}  
+                            },
+                            yAxisIndex: 0,
+                            stack:'品牌',
+                            data: data.ll.actual_production
+                        },
+                        {
+                            name: '自然气候因素',
+                            type: 'bar',
+                            label: {
+                                show: false,
+                                position: 'top'
+                            },
+                            itemStyle:{
+                                normal:{color:'#538231'}  
+                            },
+
+                            yAxisIndex: 0,
+                            stack:'品牌',
+                            data: data.ll.attainment_rate
+                        },
+                        {
+                            name: '配网公司设备原因',
+                            type: 'bar',
+                            label: {
+                                show: false,
+                                position: 'top'
+                            },
+                            itemStyle:{
+                                normal:{color:'#538231'}  
+                            },
+
+                            yAxisIndex: 0,
+                            stack:'品牌',
+                            data: data.ll.productivity
+                        },
+                        ],
+                        graphic: lineList
+                    };
+                    chart.setOption(option,true);
+               };
+               function chartText(dataArr){
+                var html=' \n'
+                    for(var i=0,len=length;i<len;i++){
+                        if(i==length-1){
+                            html+=dataArr[i]
+                        }else{
+                           html+=dataArr[i]+'\n' 
+                        }
+                        
+                    }
+
+                    return html;
+               }
+               function getTableLine(num) {
+                        var list = [];
+                        var bottom = 138;
+                        var height = 20;
+                        for (var i = 0; i < num; i++) {
+                            list.push({
+                                type: 'line',
+                                bottom: bottom - i * height,
+                                right: 76,
+                                style: {
+                                    fill: '#333'
+                                },
+                                shape: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 3200,
+                                    y2: 0
+                                }
+
+                            });
+                        }
+                        return list;
+                    }
+            /*===========================柱状表格图结束==========================*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            });
+        });
+
+    </script>
+</body>
+    
+</html>
